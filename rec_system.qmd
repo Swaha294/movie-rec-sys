@@ -1,0 +1,89 @@
+---
+title: "rec_system"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+
+## Loading Data
+
+
+```{r}
+# url = "https://files.grouplens.org/datasets/movielens/ml-latest-small.zip"
+# download.file(url, destfile = "data.zip")
+# dir.create("data")
+# unzip("data.zip",exdir = "data")   
+
+links <- read_csv("data/ml-latest-small/links.csv") %>% 
+  clean_names()
+
+movies <- read_csv("data/ml-latest-small/movies.csv") %>% 
+  clean_names()
+
+ratings <- read_csv("data/ml-latest-small/ratings.csv") %>% 
+  clean_names()
+
+tags <- read_csv("data/ml-latest-small/tags.csv") %>% 
+  clean_names()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
