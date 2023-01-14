@@ -33,15 +33,44 @@ tags <- read_csv("data/ml-latest-small/tags.csv") %>%
 ```
 
 
+```{r}
+movies <- movies %>% 
+  separate_rows(genres, sep = "\\|")
+```
+
+
+```{r}
+ratings %>% 
+  ggplot(aes(x = rating)) +
+  geom_bar() +
+  theme_bw()
+```
 
 
 
+```{r}
+ratings <- ratings %>% 
+  filter(rating != "0")
+```
 
 
+```{r}
+ratings_cnt <- ratings %>% 
+  group_by(user_id) %>% 
+  count()
+
+summary(ratings_cnt$n)
+```
 
 
+```{r}
+ratings <- ratings %>% 
+  group_by(user_id) %>% 
+  filter(n() >= 169)
 
-
+movies <- movies %>% 
+  filter(movie_id %in% ratings$movie_id)
+```
 
 
 
