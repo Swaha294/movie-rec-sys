@@ -173,9 +173,55 @@ user_movies <- ratings %>%
 
 
 
+```{r}
+selected_movies <- user_movies %>% 
+  select(movie_id, rating)
+```
 
 
+```{r}
+recommender <- function(
+    selected_movies, dis_matrix, movies, n_recommendations = 5
+) {
+  movie_indices <- which(colnames(dis_matrix) %in% selected_movies$movie_id)
+  
+  results <- data.frame(
+    dis_matrix[, movie_indices],
+    recommended_movie = rownames(dis_matrix),
+    stringsAsFactors = FALSE
+  )
+  
+  recommendations <- results %>% 
+    pivot_longer(
+      cols = -c("recommended_movie"),
+      names_to = "watched_movie",
+      values_to = "dissimilarity"
+    ) %>% 
+    left_join(
+      selected_movies,
+      by = c("recommended_movie" = "movie_id") 
+    ) %>% 
+    arrange(desc(dissimilarity)) %>% 
+    filter(recommended_movie != watched_movie) %>% 
+    filter(!is.na(rating)) %>% 
+    mutate(
+      similarity = 1 - dissimilarity,
+      weighted_score = similarity * rating) %>%
+    arrange(desc(weighted_score)) %>%
+    filter(weighted_score > 0) %>%
+    group_by(recommended_movie) %>% 
+    slice(1) %>%
+    top_n(n_recommendations, weighted_score)  %>%
+    left_join(movies_rating, by = c("recommended_movie" = "movie_id"))
 
+  return(recommendations)
+}
+```
+
+
+```{r}
+recs <- recommender(selected_movies, movie_dissimilarity, movies_rating)
+```
 
 
 
