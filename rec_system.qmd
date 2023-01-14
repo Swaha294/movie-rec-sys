@@ -68,6 +68,7 @@ ratings <- ratings %>%
   group_by(user_id) %>% 
   filter(n() >= 169)
 
+# Calculating the avg rating for each movie
 movies2 <- movies2 %>% 
   filter(movie_id %in% ratings$movie_id) %>% 
   group_by(movie_id) %>% 
@@ -95,6 +96,10 @@ ratings_cnt <- ratings %>%
 
 movies_rating <- movies_rating %>% 
   filter(movie_id %in% ratings_cnt$movie_id[1:1000])
+
+# rearranging columns
+movies_rating <- movies_rating %>% 
+  select(movie_id, title, genres, movie_rating)
 ```
 
 
@@ -107,10 +112,37 @@ library(cluster)
 
 
 ```{r}
-movies
+movies_rating <- movies_rating %>% 
+  left_join(
+    tags,
+    by = c("movie_id" = "movie_id")
+  ) %>% 
+  select(-c(user_id, timestamp)) %>% 
+  group_by(movie_id) %>% 
+  slice(1)
+
+movies_rating <- movies_rating %>% 
+  mutate(
+    movie_id = paste0("movie_", movie_id)
+  ) 
+
+movies_feature <- movies_rating %>% 
+  ungroup() %>% 
+  select(genres, movie_rating, tag) %>% 
+  mutate(
+    genres = as.factor(genres),
+    tag = as.factor(tag)
+  )
 ```
 
 
+```{r}
+movie_dissimilarity <- daisy(
+  movies_feature,
+  metric = "gower",
+  weights = c(2, 1, 0.5)
+)
+```
 
 
 
