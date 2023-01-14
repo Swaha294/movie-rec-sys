@@ -34,7 +34,7 @@ tags <- read_csv("data/ml-latest-small/tags.csv") %>%
 
 
 ```{r}
-movies <- movies %>% 
+movies2 <- movies %>% 
   separate_rows(genres, sep = "\\|")
 ```
 
@@ -68,13 +68,47 @@ ratings <- ratings %>%
   group_by(user_id) %>% 
   filter(n() >= 169)
 
-movies <- movies %>% 
-  filter(movie_id %in% ratings$movie_id)
+movies2 <- movies2 %>% 
+  filter(movie_id %in% ratings$movie_id) %>% 
+  group_by(movie_id) %>% 
+  slice(1)
+```
+
+
+```{r}
+movies_rating <- ratings %>% 
+  group_by(movie_id) %>% 
+  summarise(movie_rating = mean(rating)) %>% 
+  inner_join(
+    movies2,
+    by = c("movie_id" = "movie_id")
+  )
+```
+
+
+```{r}
+# filtering out the top 1000 most popularly rated movies
+ratings_cnt <- ratings %>% 
+  group_by(movie_id) %>% 
+  summarise(ratings_cnt = n()) %>% 
+  arrange(desc(ratings_cnt))
+
+movies_rating <- movies_rating %>% 
+  filter(movie_id %in% ratings_cnt$movie_id[1:1000])
 ```
 
 
 
+## Content-Based Recommendation System
 
+```{r}
+library(cluster)
+```
+
+
+```{r}
+movies
+```
 
 
 
