@@ -13,7 +13,7 @@ library(janitor)
 ## Loading Data
 
 
-```{r}
+```{r, message=FALSE}
 # url = "https://files.grouplens.org/datasets/movielens/ml-latest-small.zip"
 # download.file(url, destfile = "data.zip")
 # dir.create("data")
@@ -142,9 +142,34 @@ movie_dissimilarity <- daisy(
   metric = "gower",
   weights = c(2, 1, 0.5)
 )
+
+movie_dissimilarity <- as.matrix(movie_dissimilarity)
+
+colnames(movie_dissimilarity) <- movies_rating$movie_id
+rownames(movie_dissimilarity) <- movies_rating$movie_id
 ```
 
 
+```{r}
+# selecting movies for one particular user
+ratings <- ratings %>% 
+  group_by(user_id) %>% 
+  mutate(
+    user_id = paste0("user_", user_id),
+    movie_id = paste0("movie_", movie_id)
+  ) %>% 
+  ungroup()
+
+# set.seed(1234)
+# user <- paste0("user_", sample(length(unique(ratings$user_id)), 1))
+user <- "user_28"
+
+user_movies <- ratings %>% 
+  filter(
+    user_id == user,
+    movie_id %in% movies_rating$movie_id
+  )
+```
 
 
 
