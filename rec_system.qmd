@@ -221,6 +221,7 @@ recommender <- function(
 
 ```{r}
 recs <- recommender(selected_movies, movie_dissimilarity, movies_rating)
+head(recs)
 ```
 
 
